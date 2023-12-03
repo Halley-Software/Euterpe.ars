@@ -1,16 +1,19 @@
-export interface Node<T> {
-  previousNode: Node<T> | null
-  nextNode: Node<T> | null
+export interface INode<T> {
+  previousNode: INode<T> | null
+  nextNode: INode<T> | null
 
   info: T
   index: number
+
+  isFirst(): boolean
+  isLast(): boolean
 }
 
 export interface IDoubleLinkedList<T> {
-  get getFirst(): Node<T>
-  get getLast(): Node<T>
-  get begin(): Node<T>
-  getByIdx(idx: number): Node<T>
+  get getFirst(): INode<T>
+  get getLast(): INode<T>
+  get begin(): INode<T>
+  getByIdx(idx: number): INode<T>
 
   set setFirst(info: T)
   set setLast(info: T)
@@ -18,15 +21,13 @@ export interface IDoubleLinkedList<T> {
   set setAfterFirst(info: T)
   set setBeforeLast(info: T)
 
-  removeFirst(): Node<T>
-  removeLast(): Node<T>
+  removeFirst(): INode<T>
+  removeLast(): INode<T>
+  removeByIdx(idx: number): INode<T>
 
-  removeByIdx(idx: number): Node<T>
   count(): number
-
   isEmpty(): boolean
-  isFirst(node: Node<T>): boolean
-  isLast(node: Node<T>): boolean
+
   traverse(): T[]
   recurseTraverse(): T[]
 }
