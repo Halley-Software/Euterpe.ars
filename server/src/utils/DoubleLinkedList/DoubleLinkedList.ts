@@ -1,12 +1,18 @@
 import { PreviousIsNullError } from "./errors/PreviousIsNull.js";
 import { INode, IDoubleLinkedList } from "./types/DoubleLinkedListT.js"
 
+/**
+ * A node is a structure that contains the references
+ * to a previous and next node.
+ * 
+ * In addition, a index that is used as a refenrence to found the node in a list of nodes
+ */
 export class Node<T> implements INode<T> {
-  public previousNode: INode<T> | null;
-  public nextNode: INode<T> | null;
+  public index: number
+  public info: T
+  public previousNode: INode<T> | null
+  public nextNode: INode<T> | null
 
-  public info: T;
-  public index: number;
 
   public constructor(fields: {index?: number, info: T, previousNode: INode<T> | null, nextNode: INode<T>  | null}) {
     this.index ??= 0;
