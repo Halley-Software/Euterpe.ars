@@ -9,6 +9,7 @@ export interface Node<T> {
 export interface IDoubleLinkedList<T> {
   get getFirst(): Node<T>
   get getLast(): Node<T>
+  get begin(): Node<T>
   getByIdx(idx: number): Node<T>
 
   set setFirst(info: T)
