@@ -19,7 +19,7 @@ export class Node<T> implements INode<T> {
     return this.previousNode == null;
   }
 
-  public islast(): boolean {
+  public isLast(): boolean {
     return this.nextNode == null;
   }
 }
