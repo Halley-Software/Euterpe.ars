@@ -176,7 +176,7 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
   }
 
   public isEmpty(): boolean {
-    return this.doubleLinkedList == undefined
+    return this.doubleLinkedList == null
   }
 
   public traverse(): T[] {
