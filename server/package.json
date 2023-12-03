@@ -1,0 +1,21 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Server for Euterpe.ars music client",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon -e \"js, ts\" --exec \"tsx index.js\"",
+    "dev:list": "tsx watch src/utils/tests/test-linked-list.ts",
+    "dev:list2": "nodemon -e \"ts\" --exec \"tsx src/utils/tests/test-linked-list.ts\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@laniakeajs/halley.http": "2.0.0-next.19.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "tsx": "^4.6.2"
+  }
+}
