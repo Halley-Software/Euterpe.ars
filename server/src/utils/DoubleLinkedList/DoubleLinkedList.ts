@@ -165,7 +165,7 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
   public count(): number {
     let nodesCounter = 0
     if (!this.isEmpty()) {
-      let nextNode = this.doubleLinkedList.nextNode
+      let nextNode = this.begin.nextNode
       for (; nextNode != null; nodesCounter++)
         nextNode = nextNode.nextNode
 
