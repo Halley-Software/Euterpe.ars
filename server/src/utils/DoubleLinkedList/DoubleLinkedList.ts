@@ -131,8 +131,18 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
     throw new Error("Method not implemented.");
   }
 
+  /**
+   * Returns the node that match with the indicated index
+   * @param idx 
+   * @returns 
+   */
   public getByIdx(idx: number): INode<T> {
-    throw new Error("Method not implemented.");
+    let auxPtr = this.begin
+    while (auxPtr.nextNode != null && auxPtr.index != idx) {
+      auxPtr = auxPtr.nextNode
+    }
+
+    return auxPtr
   }
 
   public removeFirst(): INode<T> {
