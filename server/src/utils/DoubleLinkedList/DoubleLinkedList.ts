@@ -18,6 +18,7 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
 
   /**
    * DoubleLinkedList constructor
+   * If any parameter is passed, the constructor will replicate the model of {@link DoubleLinkedList#setFirst}
    * @param {T[]} contents Starting values
    */
   public constructor(...contents: T[]) {
@@ -170,14 +171,14 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
   recurseTraverse(): T[] {
     throw new Error("Method not implemented.");
   }
-  
+
   /**
    * Shorthand method to `DoubleLinkedList.prototype.start`
    */
   public get getFirst(): Node<T> {
-    return this.start;
+    return this.begin;
   }
-  
+
   /**
    * Iterate over all the list until finds the last node returning it
    */
@@ -195,7 +196,7 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
    * 
    * That is the same that returns the Linked List
    */
-  public get start(): Node<T> {
+  public get begin(): Node<T> {
     return this.doubleLinkedList;
   }
 }
