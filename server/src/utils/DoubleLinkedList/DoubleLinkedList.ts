@@ -113,6 +113,15 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
   }
 
   /**
+   * Appends the array data at the end of the list
+   */
+  public set addFromArray(infoArr: T[]) {
+    for (const info of infoArr) {
+      this.setLast = info;
+    }
+  }
+
+  /**
    * Insert a new node after the first node moving the rest of nodes 1 position to the right
    */
   public set setAfterFirst(info: T) {
