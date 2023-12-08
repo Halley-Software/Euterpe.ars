@@ -205,8 +205,20 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
     }
   }
 
-  recurseTraverse(): T[] {
-    throw new Error("Method not implemented.")
+  /**
+   * Iterate over the list collecting all the nodes into an array
+   */
+  public traverse(): T[] {
+    const contents: T[] = []
+    const iter = this.iter()
+    let nodes = iter.next()
+
+    while (!nodes.done) {
+      contents.push(nodes.value.info)
+      nodes = iter.next()
+    }
+    
+    return contents;
   }
 
   /**
