@@ -142,6 +142,10 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
     this.incrementIndexes()
   }
 
+  /**
+   * Adds a node that is added before the last node, moving the last node a position to right
+   * @param {T} info Info of the node inserted as penultimate node in the list
+   */
   public set setBeforeLast(info: T) {
     throw new Error("Method not implemented.")
   }
