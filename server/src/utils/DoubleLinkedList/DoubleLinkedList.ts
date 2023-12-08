@@ -192,8 +192,17 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
     return this.doubleLinkedList == null
   }
 
-  public traverse(): T[] {
-    throw new Error("Method not implemented.")
+  /**
+   * Iter over the nodes in the list using a generator
+   * @yields the first or next node in the list
+   */
+  public *iter(): Generator<INode<T>, void, INode<T>> {
+    let next = this.begin
+    yield next
+
+    while (next.nextNode != null) {
+      yield next = next.nextNode
+    }
   }
 
   recurseTraverse(): T[] {
