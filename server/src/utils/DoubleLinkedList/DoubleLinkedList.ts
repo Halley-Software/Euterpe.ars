@@ -21,10 +21,18 @@ export class Node<T> implements INode<T> {
     this.nextNode = fields.nextNode
   }
 
+  /**
+   * Check if the node is the first in the list
+   * @returns {boolean} true if is the first element in the list, false in other case
+   */
   public isFirst(): boolean {
     return this.previousNode == null
   }
 
+  /**
+   * Check if the node is the last in the list
+   * @returns {boolean} true if is the last element in the list, false in other case
+   */
   public isLast(): boolean {
     return this.nextNode == null
   }
