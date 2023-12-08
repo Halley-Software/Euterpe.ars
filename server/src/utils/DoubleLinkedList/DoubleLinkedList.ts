@@ -148,8 +148,8 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
 
   /**
    * Returns the node that match with the indicated index
-   * @param idx 
-   * @returns 
+   * @param {number} idx Index of searched node
+   * @returns {INode<T>} Node that his index match with the passed index
    */
   public getByIdx(idx: number): INode<T> {
     let auxPtr = this.begin
