@@ -167,8 +167,19 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
     throw new Error("Method not implemented.")
   }
 
+  /**
+   * Remove the last node in the list moving, setting the nextNode of penultimate to null
+   * 
+   * @returns {INode<T>} 
+   */
   public removeLast(): INode<T> {
-    throw new Error("Method not implemented.")
+    let next = this.begin;
+    while (next.nextNode != null)
+      next = next.nextNode;
+
+    if (next.previousNode != null)
+      next.previousNode.nextNode = null;
+    return next;
   }
 
   public removeByIdx(idx: number): INode<T> {
