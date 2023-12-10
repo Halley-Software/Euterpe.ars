@@ -1,5 +1,5 @@
 import { PreviousIsNullError } from "./errors/PreviousIsNull.js"
-import { INode, IDoubleLinkedList } from "./types/DoubleLinkedListT.js"
+import type { INode, IDoubleLinkedList } from "./types/DoubleLinkedListT.js"
 
 /**
  * A node is a structure that contains the references
@@ -60,7 +60,7 @@ export class Node<T> implements INode<T> {
  */
 export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
 
-  private doubleLinkedList: INode<T>
+  private doubleLinkedList!: INode<T>
 
   /**
    * DoubleLinkedList constructor
