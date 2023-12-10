@@ -3,9 +3,9 @@ import { INode, IDoubleLinkedList } from "./types/DoubleLinkedListT.js"
 
 /**
  * A node is a structure that contains the references
- * to a previous and next node.
+ * to his previous and next node.
  * 
- * In addition, a index that is used as a refenrence to found the node in a list of nodes
+ * In addition, a index that is used as a reference to found the node in a list of nodes
  */
 export class Node<T> implements INode<T> {
   public index: number
@@ -13,8 +13,17 @@ export class Node<T> implements INode<T> {
   public previousNode: INode<T> | null
   public nextNode: INode<T> | null
 
-
-  public constructor(fields: {index?: number, info: T, previousNode: INode<T> | null, nextNode: INode<T>  | null}) {
+  /**
+   * Constructs a new node with the fields passed
+   *
+   * @param {{
+   *  index: number | undefined
+   *  info: T
+   *  previousNode: INode<T> | null
+   *  nextNode: INode<T> | null
+   * }} fields 
+   */
+  public constructor(fields: {index?: number, info: T, previousNode: INode<T> | null, nextNode: INode<T> | null}) {
     this.index ??= 0
     this.info = fields.info
     this.previousNode = fields.previousNode
@@ -47,7 +56,7 @@ export class Node<T> implements INode<T> {
  * and the reference to the previous and next node
  * 
  * For be more explicit and understad better the double linked lists
- * In every node validation we are using explicit comparation with not null
+ * In every node validation we are using explicit comparation with **not null**
  */
 export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
 
@@ -175,6 +184,11 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
     return auxPtr
   }
 
+  /**
+   * Remove the first node in the list moving all the nodes 1 position to the left
+   * 
+   * @returns {INode<T>} The first node
+   */
   public removeFirst(): INode<T> {
     throw new Error("Method not implemented.")
   }
@@ -198,6 +212,10 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
     throw new Error("Method not implemented.")
   }
 
+  /**
+   * Count the number of nodes in the list
+   * @returns The number of nodes in the list
+   */
   public count(): number {
     let nodesCounter = 0
     if (!this.isEmpty()) {
@@ -211,6 +229,10 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
     return nodesCounter
   }
 
+  /**
+   * Check if the list is empty
+   * @returns {boolean} true, If the list is empty, false in other case
+   */
   public isEmpty(): boolean {
     return this.doubleLinkedList == null
   }
@@ -246,6 +268,7 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
 
   /**
    * Shorthand method to `DoubleLinkedList.prototype.start`
+   * @returns {INode<T>}
    */
   public get getFirst(): INode<T> {
     return this.begin
@@ -253,6 +276,8 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
 
   /**
    * Iterate over all the list until finds the last node returning it
+   * 
+   * @returns {INode<T>} The last node in the list
    */
   public get getLast(): INode<T> {
     let nodeAdvancer = this.begin
@@ -267,6 +292,8 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
    * Returns the first element in the list
    * 
    * That is the same that returns the Linked List
+   * 
+   * @returns {INode<T>} The first node
    */
   public get begin(): INode<T> {
     return this.doubleLinkedList
