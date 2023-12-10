@@ -62,13 +62,17 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
     for (const content of contents) {
       const newNode = new Node({info: content, previousNode: null, nextNode: null})
 
-      if (this.begin != null) // If already are 1 node
-        this.begin.previousNode = newNode
+      if (this.doubleLinkedList != null) // If already are 1 node
+        this.doubleLinkedList.previousNode = newNode
 
       newNode.nextNode = this.begin
 
       this.doubleLinkedList = newNode
-      this.incrementIndexes()
+      let auxPtr = this.begin
+      while (auxPtr.nextNode != null) {
+        auxPtr = auxPtr.nextNode
+        auxPtr.index++
+      }
     }
   }
 
