@@ -1,0 +1,22 @@
+---
+import Layout from "../../layouts/Layout.astro"
+import { getAllPlayLists, getFromPlaylist } from "../../api/GET"
+
+export async function getStaticPaths() {
+  const playlists = await getAllPlayLists()
+  
+  return playlists.map(playlist => ({
+    params: {name: playlist.PLAYLIST_NAME}
+  }))
+}
+
+const { name } = Astro.params
+
+const songs = await getFromPlaylist(name)
+---
+
+<Layout title={"Euterpe.ars - " + name}>
+  <div>
+    { songs.map(song => <h1>{song.NAME}</h1>) }
+  </div>
+</Layout>
