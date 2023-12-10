@@ -17,10 +17,12 @@ export interface IDoubleLinkedList<T> {
 
   set setFirst(info: T)
   set setLast(info: T)
+  set addFromArray(info: T[])
 
   set setAfterFirst(info: T)
   set setBeforeLast(info: T)
 
+  iter(): Generator<INode<T>, void, INode<T>>
   removeFirst(): INode<T>
   removeLast(): INode<T>
   removeByIdx(idx: number): INode<T>
@@ -29,5 +31,4 @@ export interface IDoubleLinkedList<T> {
   isEmpty(): boolean
 
   traverse(): T[]
-  recurseTraverse(): T[]
 }
