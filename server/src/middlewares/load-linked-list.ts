@@ -1,0 +1,1 @@
+import type { MiddlewareHandler } from "@laniakeajs/halley.http"

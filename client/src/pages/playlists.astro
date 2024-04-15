@@ -1,20 +1,32 @@
 ---
-import Layout from "../layouts/Layout.astro"
-import PlaylistCard from "../components/PlaylistCard.astro"
+import Layout from "@layouts/Layout.astro"
 
-import { getAllPlayLists } from "../api/GET"
+import { PlayListsAPI } from "@controllers/playlist"
+import PlayListTable from "@components/tables/PlayListsTable.astro"
 
-const res = await getAllPlayLists()
+const playLists = await PlayListsAPI.GET.all()
 ---
 
 <Layout title="Euterpe.ars - Listas de reproducción">
-  <ul>
-    {res.map(playlist => (
-      <li>
-        <a href={"/playlists/" + playlist.PLAYLIST_NAME}>
-          <PlaylistCard name={playlist.PLAYLIST_NAME} songsCount={playlist["SongPlaylist.SONGS_PER_PLAYLIST"]}/>
+  <div class="p-4 rounded-xl flex flex-col gap-4">
+    <h1 class="text-xl">Listas de reproduccion</h1>
+    <PlayListTable>
+      {playLists.map(playlist => (
+        <a href={"/playlists/" + playlist.id}>
+          <div class="grid grid-cols-4 hover:bg-gray-50 hover:bg-opacity-30">
+            <span>{playlist.id}</span>
+            <span>{playlist.name}</span>
+            <span>{playlist.size} {playlist.size > 1 ? "canciones" : "cancion"}</span>
+            <span>{playlist.created_at || "BRUH"}</span>
+          </div>
         </a>
-      </li>
-    ))}
-  </ul>
+      ))}
+    </PlayListTable>
+  </div>
 </Layout>
+
+<style>
+  span {
+    padding: 0.5rem
+  }
+</style>

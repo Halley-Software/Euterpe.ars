@@ -1,0 +1,40 @@
+---
+import Layout from "@layouts/Layout.astro"
+
+import { SongsAPI } from "@controllers/song"
+import { PlayListsAPI } from "@controllers/playlist"
+
+import BackArrow from "@icons/BackArrow.astro"
+import SongCard from "@components/SongCard.astro"
+import SongsTable from "@components/tables/SongsTable.astro"
+
+const { id } = Astro.params
+
+const playlistSongs = await SongsAPI.GET.allFromPlaylist(parseInt(id!))
+const playlistInfo = await PlayListsAPI.GET.byID(parseInt(id!))
+---
+<Layout title={`Euterpe.ars - ${playlistInfo.name}`}>
+  <div class="p-4 rounded-xl flex flex-col gap-4">
+    <div class="flex flex-row items-center gap-4">
+      <a href="/playlists">
+        <BackArrow />
+      </a>
+      <div>
+        <h1 class="text-xl">Lista de reproducción</h1>
+        <h3 class="font-extrabold">{playlistInfo.name}</h3>
+      </div>
+    </div>
+    <SongsTable isAuthor={true}>
+      {playlistSongs.map((song, index) => (
+        <SongCard
+          index={index}
+          title={song.name}
+          artist={song.artist}
+          duration={song.duration}
+          addedAt={song.added_at}
+          artistURL
+        />
+      ))}
+    </SongsTable>
+  </div>
+</Layout>

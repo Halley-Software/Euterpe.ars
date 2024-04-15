@@ -1,0 +1,108 @@
+---
+import { ArtistsAPI } from '@controllers/artists'
+import { PlayListsAPI } from '@controllers/playlist'
+
+const playlists = await PlayListsAPI.GET.all()
+const artists = await ArtistsAPI.GET.all()
+---
+<div>
+  <button id="close">
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      stroke-width="2"
+      stroke="currentColor"
+      fill="none"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M18 6l-12 12" />
+      <path d="M6 6l12 12" />
+    </svg>
+  </button>
+  <form method="post" id="form">
+    <!-- "width: 100%" and "box-sizing: border-box" in inputs and selects from: https://stackoverflow.com/a/22656189/18592727 -->
+    <div class="grid grid-flow-row grid-cols-2 gap-y-10 gap-x-14">
+      <div>
+        <label>URL</label>
+        <input
+          class="block w-[100%] box-border p-2 bg-inherit outline outline-gray-400 outline-none focus:outline-white transition-all"
+          type="text"
+          name="url"
+          required
+          placeholder="https://www.youtube.com/..."
+        />
+      </div>
+  
+      <div>
+        <label>Lista de reproduccion</label>
+        <select
+          class="block w-[100%] box-border p-2 bg-inherit outline outline-gray-400 outline-none focus:outline-white transition-all"
+          name="playlist"
+        >
+        {playlists.map(playlist => (
+          <option class="bg-[#242424]" value={JSON.stringify(playlist)}>
+            <img src={playlist.image_url} />
+            <span>{playlist.name}</span>
+          </option>
+        ))}
+        </select>
+      </div>
+      
+      <div>
+        <label>Nombre de la cancion</label>
+        <input
+          class="block w-[100%] box-border p-2 bg-inherit outline outline-gray-400 outline-none focus:outline-white transition-all"
+          type="text"
+          name="name"
+          placeholder="Sera rellenado automáticamente desde el backend. Puedes sobreescribirlo también."
+        />
+      </div>
+  
+      <div>
+        <label>Artista</label>
+        <select>
+          {artists.map(artist => (
+            <option value={JSON.stringify(artist)}>{artist.name}</option>
+          ))}
+        </select>
+        <input
+          class="block w-[100%] box-border p-2 bg-inherit outline outline-gray-400 outline-none focus:outline-white transition-all"
+          type="text"
+          name="artist"
+          placeholder="Sera rellenado automáticamente desde el backend. Puedes sobreescribirlo también."
+        />
+      </div>
+    </div>
+    
+    <button type="submit" class="block m-auto bg-blue-500 hover:bg-blue-600 active:bg-blue-500 p-3 rounded-md mt-20">Añadir</button>
+  </form>
+</div>
+<script>
+  import { isModalOpen } from "@nano/modal"
+	const form = document.querySelector("form")
+	const buttonClose = document.getElementById("close")
+
+  // Regular expression form https://github.com/Raxabi/Downlotube-HTTP/blob/main/client/src/components/UrlForm.tsx#L15C92-L15C92
+  const VALID_URL = new RegExp(/^(https:\/\/(www\.)?)?youtube\.com\/watch\?v=.|youtu\.be\/./)
+  
+  buttonClose?.addEventListener("click", () => isModalOpen.set(false))
+
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault()
+    
+    const data = new FormData(form)
+    const url = data.get("url")
+
+    if (url && !VALID_URL.test(url.toString())) {
+      alert("URL no valida!")
+    } else {
+      const req = await fetch("http://localhost:5000/songs/new", {
+        method: "POST",
+        body: data
+      })
+    }
+  })
+</script>

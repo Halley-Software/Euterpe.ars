@@ -1,0 +1,32 @@
+---
+import { PlayListsAPI } from "@controllers/playlist"
+
+import PlusIcon from "@icons/PlusIcon.astro"
+import PlaylistAsideCard from "./PlaylistAsideCard"
+
+const playlists = await PlayListsAPI.GET.all()
+---
+<aside class="bg-[#242424] flex-grow p-6 rounded-xl">
+  <div class="flex flex-row items-center">
+    <h1 class="text-xl font-semibold">Tu biblioteca</h1>
+    <button
+      title="Añade una lista de canción"
+      class="ml-auto p-1 hover:rounded-3xl hover:bg-gray-950 hover:bg-opacity-30"
+      id="open-modal-button"
+      transition:persist
+    >
+      <PlusIcon />
+    </button>
+  </div>
+  <div class="flex flex-col gap-2 mt-2">
+    {playlists.map((playlist) => (
+      <PlaylistAsideCard
+        pl={playlist}
+        songsCount={playlist.size}
+        client:only="react"
+      />
+    ))}
+  </div>
+</aside>
+<script>
+</script>

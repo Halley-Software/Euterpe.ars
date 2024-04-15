@@ -1,7 +1,32 @@
 ---
-import Layout from "../layouts/Layout.astro"
+import Layout from "@layouts/Layout.astro"
+
+import { ArtistsAPI } from "@controllers/artists"
+import ArtistTable from "@components/tables/ArtistTable.astro"
+
+const artists = await ArtistsAPI.GET.all()
 ---
 
 <Layout title="Euterpe.ars - Artistas">
-  
+  <div class="p-4 rounded-xl flex flex-col gap-4">
+    <h1 class="text-xl">Artistas</h1>
+    <ArtistTable>
+      {artists.map(artist => (
+        <a href={"/artists/" + artist.id}>
+          <div class="grid grid-cols-4 hover:bg-gray-50 hover:bg-opacity-30">
+            <span>{artist.id}</span>
+            <span>{artist.name}</span>
+            <span>{artist.size} {artist.size > 1 ? "canciones" : "cancion"}</span>
+            <span>{artist.registered_at}</span>
+          </div>
+        </a>
+      ))}
+    </ArtistTable>
+  </div>
 </Layout>
+
+<style>
+  span {
+    padding: 0.5rem
+  }
+</style>

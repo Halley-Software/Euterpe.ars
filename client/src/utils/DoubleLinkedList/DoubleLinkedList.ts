@@ -1,5 +1,6 @@
 import { PreviousIsNullError } from "./errors/PreviousIsNull.js"
-import type { INode, IDoubleLinkedList } from "./types/DoubleLinkedListT.js"
+import type { INode, IDoubleLinkedList } from "./typings/DoubleLinkedListT.js"
+import type { Nullable } from "@utils/utils"
 
 /**
  * A node is a structure that contains the references
@@ -10,20 +11,15 @@ import type { INode, IDoubleLinkedList } from "./types/DoubleLinkedListT.js"
 export class Node<T> implements INode<T> {
   public index: number
   public info: T
-  public previousNode: INode<T> | null
-  public nextNode: INode<T> | null
+  public previousNode: Nullable<INode<T>>
+  public nextNode: Nullable<INode<T>>
 
   /**
    * Constructs a new node with the fields passed
    *
-   * @param {{
-   *  index: number | undefined
-   *  info: T
-   *  previousNode: INode<T> | null
-   *  nextNode: INode<T> | null
-   * }} fields 
+   * @param fields literal object containing the data of a node
    */
-  public constructor(fields: {index?: number, info: T, previousNode: INode<T> | null, nextNode: INode<T> | null}) {
+  public constructor(fields: {index?: number, info: T, previousNode: Nullable<INode<T>>, nextNode: Nullable<INode<T>>}) {
     this.index ??= 0
     this.info = fields.info
     this.previousNode = fields.previousNode
@@ -35,7 +31,7 @@ export class Node<T> implements INode<T> {
    * @returns {boolean} true if is the first element in the list, false in other case
    */
   public isFirst(): boolean {
-    return this.previousNode == null
+    return this.previousNode === null
   }
 
   /**
@@ -43,7 +39,7 @@ export class Node<T> implements INode<T> {
    * @returns {boolean} true if is the last element in the list, false in other case
    */
   public isLast(): boolean {
-    return this.nextNode == null
+    return this.nextNode === null
   }
 }
 
@@ -60,27 +56,38 @@ export class Node<T> implements INode<T> {
  */
 export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
 
-  private doubleLinkedList!: INode<T>
+  private doubleLinkedList: Nullable<Node<T>>
 
   /**
-   * DoubleLinkedList constructor
-   * If any parameter is passed, the constructor will replicate the model of {@link DoubleLinkedList#setFirst}
-   * @param {T[]} contents Starting values
+   * DoubleLinkedList constructor, passing an array will iterate it adding his elements, and incrementing the index
+   * @param contents Array or value of `T` type 
    */
-  public constructor(...contents: T[]) {
-    for (const content of contents) {
-      const newNode = new Node({info: content, previousNode: null, nextNode: null})
+  public constructor(contents: T | T[]) {
+    if (!Array.isArray(contents))
+      this.doubleLinkedList = new Node({ index: 0, info: contents, previousNode: null, nextNode: null })
+    else {
+      if (contents.length === 0)
+        this.doubleLinkedList = null
+      else {
+        this.doubleLinkedList = new Node({ info: contents[0], previousNode: null, nextNode: null })      
+        let aux = this.doubleLinkedList
+        const sliced = contents.slice(1)
 
-      if (this.doubleLinkedList != null) // If already are 1 node
-        this.doubleLinkedList.previousNode = newNode
+        // Adds all the element from the array
+        for (let i = 0; i < sliced.length; i++) {
+          const newNode = new Node({ index: i, info: sliced[i], previousNode: aux, nextNode: null })
+          aux.nextNode = newNode
+          aux = newNode
+        }
 
-      newNode.nextNode = this.begin
-
-      this.doubleLinkedList = newNode
-      let auxPtr = this.begin
-      while (auxPtr.nextNode != null) {
-        auxPtr = auxPtr.nextNode
-        auxPtr.index++
+        // Increment the indexes
+        let auxPtr: Nullable<Node<T>> = this.doubleLinkedList
+        while (auxPtr !== null) {
+          if (auxPtr.previousNode)
+            auxPtr.index = auxPtr.previousNode.index + 1
+            
+          auxPtr = auxPtr.nextNode
+        }
       }
     }
   }
@@ -90,9 +97,11 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
    */
   private incrementIndexes(): void {
     let auxPtr = this.begin
-    while (auxPtr.nextNode != null) {
-      auxPtr = auxPtr.nextNode
-      auxPtr.index++
+    if (auxPtr) {
+      while (auxPtr.nextNode !== null) {
+        auxPtr = auxPtr.nextNode
+        auxPtr.index++
+      }
     }
   }
 
@@ -102,7 +111,7 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
   public set setFirst(info: T) {
     const newNode = new Node({info, previousNode: null, nextNode: null})
 
-    if (this.begin != null) // If already are 1 node
+    if (this.begin !== null) // If already are 1 node
       this.begin.previousNode = newNode // Change the previous node of the first element from null to the new created node
 
     // Sets the next node of the new first element to the actual state of list (that contains as previous node the new created node)
@@ -116,15 +125,15 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
    * Set a node as the last value in the list
    */
   public set setLast(info: T) {
-    if (this.isEmpty())
+    if (this.doubleLinkedList === null)
       this.setFirst = info
     else {
       // In this case we assign the index, previousNode and nextNode later when we find the last node
       // Assigning this values according to these node
       const newNode = new Node({info, previousNode: null, nextNode: null})
 
-      let auxNode = this.begin // At the end of the loop will represent the last node in the list
-      while (auxNode.nextNode != null)
+      let auxNode = this.doubleLinkedList // At the end of the loop will represent the last node in the list
+      while (auxNode.nextNode !== null)
         auxNode = auxNode.nextNode
 
       newNode.index = auxNode.index + 1
@@ -146,28 +155,34 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
    * Insert a new node after the first node moving the rest of nodes 1 position to the right
    */
   public set setAfterFirst(info: T) {
-    if (this.isEmpty())
+    if (this.doubleLinkedList === null)
       throw new PreviousIsNullError("Cannot add elements after the first element if the list is empty")
 
+
+    const firstNode = this.doubleLinkedList
     /**
      *  * Index: We increment the index then, once the new node was added to the list
      *  * PreviousNode: Represents the first value in the list,
      *  * NexTNode: Represents the second value in the list, thats why we had checked if the list is empty at the begining of the method
      */
-    const newNode = new Node({info, previousNode: this.begin, nextNode: this.begin.nextNode})
+    const newNode = new Node({info, previousNode: firstNode, nextNode: firstNode})
 
-    if (newNode.nextNode != null)
+    if (newNode.nextNode !== null)
       newNode.nextNode.previousNode = newNode
 
-    this.begin.nextNode = newNode
+    firstNode.nextNode = newNode
     this.incrementIndexes()
   }
 
   /**
    * Adds a node that is added before the last node, moving the last node a position to right
-   * @param {T} info Info of the node inserted as penultimate node in the list
+   * @param info Info of the node inserted as penultimate node in the list
    */
   public set setBeforeLast(info: T) {
+    throw new Error("Method not implemented.")
+  }
+
+  public hollowOut(): number {
     throw new Error("Method not implemented.")
   }
 
@@ -176,10 +191,12 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
    * @param {number} idx Index of searched node
    * @returns {INode<T>} Node that his index match with the passed index
    */
-  public getByIdx(idx: number): INode<T> {
+  public getByIdx(idx: number): Nullable<Node<T>> {
     let auxPtr = this.begin
-    while (auxPtr.nextNode != null && auxPtr.index != idx)
-      auxPtr = auxPtr.nextNode
+    if (auxPtr) {
+      while (auxPtr.nextNode !== null && auxPtr.index !== idx)
+        auxPtr = auxPtr.nextNode
+    }
 
     return auxPtr
   }
@@ -187,28 +204,30 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
   /**
    * Remove the first node in the list moving all the nodes 1 position to the left
    * 
-   * @returns {INode<T>} The first node
+   * @returns The first node
    */
-  public removeFirst(): INode<T> {
+  public removeFirst(): Node<T> {
     throw new Error("Method not implemented.")
   }
 
   /**
    * Remove the last node in the list moving, setting the nextNode of penultimate to null
    * 
-   * @returns {INode<T>} 
+   * @returns
    */
-  public removeLast(): INode<T> {
-    let next = this.begin;
-    while (next.nextNode != null)
-      next = next.nextNode;
+  public removeLast(): Nullable<Node<T>> {
+    let next = this.begin
+    if (next) {
+      while (next.nextNode !== null)
+        next = next.nextNode
 
-    if (next.previousNode != null)
-      next.previousNode.nextNode = null;
+      if (next.previousNode !== null)
+        next.previousNode.nextNode = null
+    }
     return next;
   }
 
-  public removeByIdx(idx: number): INode<T> {
+  public removeByIdx(idx: number): Node<T> {
     throw new Error("Method not implemented.")
   }
 
@@ -218,9 +237,9 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
    */
   public count(): number {
     let nodesCounter = 0
-    if (!this.isEmpty()) {
+    if (!this.isEmpty() && this.begin) {
       let nextNode = this.begin.nextNode
-      for (; nextNode != null; nodesCounter++)
+      for (; nextNode !== null; nodesCounter++)
         nextNode = nextNode.nextNode
 
       nodesCounter += 1 // Needs to plus 1 because we got 1 node outside the loop that was not counted
@@ -234,7 +253,7 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
    * @returns {boolean} true, If the list is empty, false in other case
    */
   public isEmpty(): boolean {
-    return this.doubleLinkedList == null
+    return this.doubleLinkedList === null
   }
 
   /**
@@ -242,50 +261,35 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
    * @yields the first or next node in the list
    */
   public *iter(): Generator<INode<T>, void, INode<T>> {
-    let next = this.begin
-    yield next
+    let actual = this.begin
 
-    while (next.nextNode != null) {
-      yield next = next.nextNode
+    if (actual) {
+      while (actual.nextNode !== null) {
+        yield actual
+        actual = actual.nextNode
+      }
     }
   }
 
   /**
    * Iterate over the list collecting all the nodes into an array
    */
-  public traverse(): T[] {
-    const contents: T[] = []
+  public traverse(): INode<T>[] {
+    const contents: INode<T>[] = []
     const iter = this.iter()
     let nodes = iter.next()
 
     while (!nodes.done) {
-      contents.push(nodes.value.info)
+      contents.push(nodes.value)
       nodes = iter.next()
     }
     
     return contents;
   }
 
-  /**
-   * Shorthand method to `DoubleLinkedList.prototype.start`
-   * @returns {INode<T>}
-   */
-  public get getFirst(): INode<T> {
-    return this.begin
-  }
-
-  /**
-   * Iterate over all the list until finds the last node returning it
-   * 
-   * @returns {INode<T>} The last node in the list
-   */
-  public get getLast(): INode<T> {
-    let nodeAdvancer = this.begin
-    while (nodeAdvancer.nextNode) {
-      nodeAdvancer = nodeAdvancer.nextNode
-    }
-    
-    return nodeAdvancer
+  public forEach(does: (node: Node<T>) => void): void {
+    for (const node of this.traverse())
+      does(node)
   }
 
   /**
@@ -293,9 +297,36 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
    * 
    * That is the same that returns the Linked List
    * 
-   * @returns {INode<T>} The first node
+   * @returns The first node
    */
-  public get begin(): INode<T> {
+  public get begin(): Nullable<Node<T>> {
     return this.doubleLinkedList
+  }
+
+  public get last(): Nullable<Node<T>> {
+    let walker = this.begin
+    if (walker) {
+      while (walker.nextNode !== null) {
+        walker = walker.nextNode
+      }
+    }
+    return walker
+  }
+
+  /**
+   * Shorthand method to `DoubleLinkedList.prototype.begin` getter
+   * @returns
+   */
+  public getFirst(): Nullable<Node<T>> {
+    return this.begin
+  }
+
+  /**
+   * Iterate over all the list until finds the last node returning it
+   * 
+   * @returns The last node in the list
+   */
+  public getLast(): Nullable<Node<T>> {
+    return this.last
   }
 }

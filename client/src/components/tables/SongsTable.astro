@@ -1,0 +1,25 @@
+---
+import Calendar from '@icons/Calendar.astro'
+---
+<div id="table" class="select-none">
+  <div id="table-head">
+    <div id="table-row" class="grid grid-cols-5 border-b-[1px] border-white">
+      <span>#</span>
+      <span>Título</span>
+      <span>Autor</span>
+      <span>Duracion</span>
+      <span><Calendar /></span>
+    </div>
+  </div>
+  <div id="table-body" class="max-h-[70vh] overflow-y-scroll">
+    <slot />
+  </div>
+</div>
+<style>
+  #table-row {
+    scrollbar-gutter: stable;
+  }
+  span {
+    padding: 0.5rem
+  }
+</style>

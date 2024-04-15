@@ -1,8 +1,27 @@
 ---
+import type { IArtist } from '#types/artist'
 
-const { name } = Astro.props
+interface Props {
+  index: number,
+  title: string,
+  artist: IArtist[],
+  addedAt: any, 
+  duration: number
+  artistURL?: boolean
+}
+
+const { index, title, artist, duration, addedAt, artistURL } = Astro.props
 ---
 
-<div class="">
-  <h3>{name}</h3>
+<div class={`grid ${(artist ? "grid-cols-5" : "grid-cols-4")} hover:bg-gray-50 hover:bg-opacity-30`}>
+  <span class="p-2">{(index + 1)}</span>
+  <span class="p-2">{title}</span>
+  {artist.map(artist => (
+    artistURL ?
+      <a class="p-2 hover:underline hover:cursor-pointer" href={`http://localhost:4321/artists/${artist.id}`}>{artist.name}</a> :
+      <a class="p-2">{artist.name}</a>
+    )
+  )}
+  <span class="p-2">{Math.floor(duration / 60)}:{(duration % 60).toString().padStart(2, "0")}</span>
+  <span class="p-2">{addedAt || "BRUH"}</span>
 </div>

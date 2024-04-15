@@ -3,19 +3,25 @@
   "version": "1.0.0",
   "description": "Server for Euterpe.ars music client",
   "type": "module",
+  "main": "index.js",
   "scripts": {
     "dev": "nodemon -e \"js, ts\" --exec \"tsx index.js\"",
     "dev:list": "tsx watch src/utils/tests/test-linked-list.ts",
+    "dev:populate": "tsx src/tests/populate-tables.ts",
     "dev:list2": "nodemon -e \"ts\" --exec \"tsx src/utils/tests/test-linked-list.ts\""
   },
   "keywords": [],
-  "author": "",
+  "author": "Halley Software",
   "license": "ISC",
   "dependencies": {
-    "@laniakeajs/halley.http": "2.0.0-next.19.1"
+    "@laniakeajs/halley.http": "2.0.0-next.19.4",
+    "@tinyhttp/cors": "^2.0.0",
+    "mysql2": "^3.9.3",
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2",
-    "tsx": "^4.6.2"
+    "@types/node": "^20.12.3",
+    "nodemon": "^3.1.0",
+    "tsx": "^4.7.1"
   }
 }

@@ -1,0 +1,15 @@
+#back:hover > .svg-control-hover-color {
+  fill: white;
+}
+
+#back:active > .svg-control-hover-color {
+  fill: #9ba9be;
+}
+
+#next:hover > .svg-control-hover-color {
+  fill: white;
+}
+
+#next:hover:active > .svg-control-hover-color {
+  fill: #9ba9be;
+}

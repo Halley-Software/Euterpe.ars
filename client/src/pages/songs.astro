@@ -1,7 +1,27 @@
 ---
-import Layout from "../layouts/Layout.astro"
+import Layout from "@layouts/Layout.astro"
+
+import { SongsAPI } from "@controllers/song"
+import SongsTable from "@components/tables/SongsTable.astro"
+import SongCard from "@components/SongCard.astro"
+
+const songs = await SongsAPI.GET.all()
 ---
 
 <Layout title="Euterpe.ars - Canciones">
-  
+  <div class="p-4 rounded-xl flex flex-col gap-4">
+    <h1 class="text-xl">Canciones</h1>
+    <SongsTable>
+      {songs.map((song, index) => (
+        <SongCard
+          index={index}
+          title={song.name}
+          artist={song.artist}
+          duration={song.duration}
+          addedAt={song.added_at}
+          artistURL
+        />
+      ))}
+    </SongsTable>
+  </div>
 </Layout>

@@ -1,10 +1,27 @@
 ---
+import HeaderListComponent from "./HeaderListComponent.astro";
+
+import Home from "./svgs/HomeIcon.astro"
+import Songs from "./svgs/SongIcon.astro"
+import Playlists from "./svgs/PlaylistIcon.astro"
+import Artists from "./svgs/ArtistIcon.astro"
 ---
 
-<header>
-  <ul class="flex flex-row gap-4 m-auto list-none w-max">
-    <li><a href="/songs">Canciones</a></li>
-    <li><a href="/playlists">Playlists</a></li>
-    <li><a href="/artists">Artistas</a></li>
-  </ul>
+<header class="flex flex-col gap-5">
+  <nav class="bg-[#242424] p-6 rounded-xl">
+    <ul class="flex flex-col gap-3 list-none">
+      <HeaderListComponent path="/" content="Inicio">
+        <Home />
+      </HeaderListComponent>
+      <HeaderListComponent path="/songs" content="Canciones">
+        <Songs />
+      </HeaderListComponent>
+      <HeaderListComponent path="/playlists" content="Listas">
+        <Playlists />
+      </HeaderListComponent>
+      <HeaderListComponent path="/artists" content="Artistas">
+        <Artists />
+      </HeaderListComponent>
+    </ul>
+  </nav>
 </header>

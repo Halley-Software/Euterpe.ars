@@ -1,0 +1,21 @@
+---
+interface Props {
+  path: string,
+  content: string
+}
+
+const { path, content } = Astro.props
+---
+
+<li>
+  <a href={path} class="flex items-center">
+    <slot />
+    <span class="ml-8 text-xl font-extrabold text-gray-400 transition ease-in-out">{content}</span>
+  </a>
+</li>
+
+<style>
+  li:hover > a > span {
+    color: white;
+  }
+</style>
