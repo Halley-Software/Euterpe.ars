@@ -1,4 +1,5 @@
 import {
+  useEffect,
   useState,
   type ChangeEvent
 } from "react"
@@ -19,8 +20,11 @@ import Slider from "../Slider"
 import { useInterval } from "@hooks/custom"
 
 import PlayerModel from "@models/player.model"
+import type { Node } from "@utils/DoubleLinkedList/DoubleLinkedList"
+import type { PlayableSong } from "@ctypes/ClientPlaylist"
+import { In } from "@utils/utils"
 
-function RandomSelection(){
+function RandomSelection({ randomSong }: { randomSong: boolean }){
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -35,10 +39,10 @@ function RandomSelection(){
       className="icon icon-tabler icons-tabler-outline icon-tabler-arrows-shuffle"
     >
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-      <path d="M18 4l3 3l-3 3" />
-      <path d="M18 20l3 -3l-3 -3" />
-      <path d="M3 7h3a5 5 0 0 1 5 5a5 5 0 0 0 5 5h5" />
-      <path d="M21 7h-5a4.978 4.978 0 0 0 -3 1m-4 8a4.984 4.984 0 0 1 -3 1h-3" />
+      <path stroke={randomSong ? "rgb(22 163 74)" : "#ffffff"} d="M18 4l3 3l-3 3" />
+      <path stroke={randomSong ? "rgb(22 163 74)" : "#ffffff"} d="M18 20l3 -3l-3 -3" />
+      <path stroke={randomSong ? "rgb(22 163 74)" : "#ffffff"} d="M3 7h3a5 5 0 0 1 5 5a5 5 0 0 0 5 5h5" />
+      <path stroke={randomSong ? "rgb(22 163 74)" : "#ffffff"} d="M21 7h-5a4.978 4.978 0 0 0 -3 1m-4 8a4.984 4.984 0 0 1 -3 1h-3" />
     </svg>
   )
 }
@@ -77,6 +81,8 @@ function RepeatButton({ mustRepeat }: { mustRepeat: boolean }) {
 function Controls() {
   const [time, setTime] = useState(0)
   const [mustRepeat, setMustRepeat] = useState(false)
+  const [random, setRandom] = useState(false)
+  const [array] = useState<Array<number>>([])
 
   const $song = useStore(song)
   const $isPaused = useStore(isPaused)
@@ -104,37 +110,38 @@ function Controls() {
     }
   }
 
+  const configureNextAudio = async (next: Node<PlayableSong>) => {
+    const currentSong = song.get()
+
+    if (currentSong) {
+      resetAudioProps()
+      next.info.audio.volume = currentSong.info.audio.volume
+      song.set(next)
+      await next.info.audio.play()
+    }
+      
+  }
+
   // see PlayerModel.previous
   const previousSongs = () => {
     const currentSong = song.get()
 
-    if (currentSong?.previousNode) {
-      resetAudioProps()      
-      currentSong.previousNode.info.audio.volume = currentSong.info.audio.volume
-
-      song.set(currentSong.previousNode)
-      currentSong.previousNode.info.audio.play()
-    }
+    if (currentSong?.previousNode)
+      configureNextAudio(currentSong.previousNode)
   }
 
-  // @see PlayerModel.stop
   const handleStop = () => PlayerModel.stop()
 
-  // @see PlayerModel.next
   const nextSong = () => {
     const currentSong = song.get()
 
-    if (currentSong?.nextNode) {
-      resetAudioProps()
-      currentSong.nextNode.info.audio.volume = currentSong.info.audio.volume
-      
-      song.set(currentSong.nextNode)
-      currentSong.nextNode.info.audio.play()
-    }
+    if (currentSong?.nextNode)
+      configureNextAudio(currentSong.nextNode)
   }
 
-  // Changes the state to global state !mustRepeat
   const handleRepeatable = () => setMustRepeat(!mustRepeat)
+
+  const handleRandom = () => setRandom(!random)
 
   useInterval(() => {
     const currentSong = song.get()
@@ -144,17 +151,33 @@ function Controls() {
       setTime(currentSong.info.audio.currentTime)
 
       if (currentSong.info.audio.currentTime === currentSong.info.audio.duration) {
-        if (currentSong.isLast() && mustRepeat) {
-          song.set(currentPlaylist.songs.begin)
-          // safety non-null assert: the first if checks if currentSong exists
-          currentPlaylist.songs.begin!.info.audio.play()
+        if (currentSong.isLast() && mustRepeat)
+          configureNextAudio(currentPlaylist.songs.begin!)
+
+        if (random) {
+          const playlistLength = currentPlaylist.songs.count()
+          let randomSong = currentPlaylist.songs.getByIdx(Math.floor(Math.random() * playlistLength))
+          array.push(currentSong.index)
+
+          if (array.length === playlistLength) {
+            console.log("Se llego al tope")
+            while(array.length > 0) {
+              array.pop();
+            }
+          }
+
+          while (In(randomSong?.index, array)) {
+            console.log("Buscando otra cancion")
+            randomSong = currentPlaylist.songs.getByIdx(Math.floor(Math.random() * playlistLength))
+          }
+
+          // safety non-null assert: the list have at least 1 node at this point
+          // according to the first validation (currentSong && currentPlaylist)
+          configureNextAudio(randomSong!)
         }
 
-        if (currentSong.nextNode) {
-          currentSong.nextNode.info.audio.volume = currentSong.info.audio.volume
-          song.set(currentSong.nextNode)
-          currentSong.nextNode.info.audio.play()
-        }
+        if (currentSong.nextNode)
+          configureNextAudio(currentSong.nextNode)
       }
     }
   }, 1000)
@@ -162,8 +185,8 @@ function Controls() {
   return (
     <div className="flex flex-col gap-4 items-center justify-center">
       <div className="flex flex-row gap-6 items-center justify-center">
-        <button>
-          <RandomSelection />
+        <button onClick={handleRandom}>
+          <RandomSelection randomSong={random} />
         </button>
         <button onClick={previousSongs}>
           <PreviousButton />

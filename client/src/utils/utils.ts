@@ -19,3 +19,13 @@ export const b64ToBlob = (b64String: string): Blob => {
     type: "audio/mp4"
   })
 }
+
+export const In = <T>(element: T, array: T[]): boolean => {
+  console.log("Array en in: ", array)
+  for (let i = 0; i < array.length; i++)
+    if (array[i] === element)
+      return true
+
+  return false
+
+}
