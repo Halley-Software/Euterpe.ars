@@ -8,18 +8,18 @@ import type { Nullable } from "@utils/utils"
  * 
  * In addition, a index that is used as a reference to found the node in a list of nodes
  */
-export class Node<T> implements INode<T> {
+export class Node<T> implements Node<T> {
   public index: number
   public info: T
-  public previousNode: Nullable<INode<T>>
-  public nextNode: Nullable<INode<T>>
+  public previousNode: Nullable<Node<T>>
+  public nextNode: Nullable<Node<T>>
 
   /**
    * Constructs a new node with the fields passed
    *
    * @param fields literal object containing the data of a node
    */
-  public constructor(fields: {index?: number, info: T, previousNode: Nullable<INode<T>>, nextNode: Nullable<INode<T>>}) {
+  public constructor(fields: {index?: number, info: T, previousNode: Nullable<Node<T>>, nextNode: Nullable<Node<T>>}) {
     this.index ??= 0
     this.info = fields.info
     this.previousNode = fields.previousNode
@@ -182,6 +182,7 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
     throw new Error("Method not implemented.")
   }
 
+  /***/
   public hollowOut(): number {
     throw new Error("Method not implemented.")
   }
@@ -206,8 +207,15 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
    * 
    * @returns The first node
    */
-  public removeFirst(): Node<T> {
-    throw new Error("Method not implemented.")
+  public removeFirst(): Nullable<Node<T>> {
+    const node = this.begin
+    if (node === null)
+      return node
+
+    const next = node.nextNode
+    this.doubleLinkedList = next
+
+    return node
   }
 
   /**
@@ -217,7 +225,7 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
    */
   public removeLast(): Nullable<Node<T>> {
     let next = this.begin
-    if (next) {
+    if (next !== null) {
       while (next.nextNode !== null)
         next = next.nextNode
 
@@ -227,8 +235,21 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
     return next;
   }
 
-  public removeByIdx(idx: number): Node<T> {
-    throw new Error("Method not implemented.")
+  public removeByIdx(idx: number): Nullable<Node<T>> {
+    const node = this.getByIdx(idx)
+    if (node === null)
+      return node
+
+    const prev = node.previousNode
+    const next = node.nextNode
+
+    if (prev !== null)
+      prev.nextNode = next
+
+    if (next !== null)
+      next.previousNode = prev
+
+    return node
   }
 
   /**
@@ -260,35 +281,32 @@ export class DoubleLinkedList<T> implements IDoubleLinkedList<T> {
    * Iter over the nodes in the list using a generator
    * @yields the first or next node in the list
    */
-  public *iter(): Generator<INode<T>, void, INode<T>> {
+  public *iter(): Generator<Node<T>, void, Node<T>> {
     let actual = this.begin
 
-    if (actual) {
-      while (actual.nextNode !== null) {
-        yield actual
-        actual = actual.nextNode
-      }
+    while (actual !== null) {
+      yield actual
+      actual = actual.nextNode
     }
   }
 
   /**
    * Iterate over the list collecting all the nodes into an array
    */
-  public traverse(): INode<T>[] {
-    const contents: INode<T>[] = []
-    const iter = this.iter()
-    let nodes = iter.next()
+  public collect(): Node<T>[] {
+    const contents: Node<T>[] = []
+    let node = this.doubleLinkedList
 
-    while (!nodes.done) {
-      contents.push(nodes.value)
-      nodes = iter.next()
+    while (node !== null) {
+      contents.push(node)
+      node = node.nextNode
     }
     
     return contents;
   }
 
   public forEach(does: (node: Node<T>) => void): void {
-    for (const node of this.traverse())
+    for (const node of this.collect())
       does(node)
   }
 

@@ -30,11 +30,11 @@ export interface IDoubleLinkedList<T> {
   iter(): Generator<INode<T>, void, INode<T>>
   removeFirst(): Nullable<INode<T>>
   removeLast(): Nullable<INode<T>>
-  removeByIdx(idx: number): INode<T>
+  removeByIdx(idx: number): Nullable<INode<T>>
 
   count(): number
   isEmpty(): boolean
 
-  traverse(): INode<T>[]
+  collect(): INode<T>[]
   forEach(does: (node: INode<T>) => void): void
 }
