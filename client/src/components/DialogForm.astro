@@ -6,7 +6,7 @@ const playlists = await PlayListsAPI.GET.all()
 const artists = await ArtistsAPI.GET.all()
 ---
 <div>
-  <button id="close">
+  <button id="close-modal-button">
     <svg
       width="24"
       height="24"
@@ -25,6 +25,34 @@ const artists = await ArtistsAPI.GET.all()
   <form method="post" id="form">
     <!-- "width: 100%" and "box-sizing: border-box" in inputs and selects from: https://stackoverflow.com/a/22656189/18592727 -->
     <div class="grid grid-flow-row grid-cols-2 gap-y-10 gap-x-14">
+
+      <!-- Nombre de la cancion -->
+      <div>
+        <label>Nombre de la cancion</label>
+        <input
+          class="block w-[100%] box-border p-2 bg-inherit outline outline-gray-400 outline-none focus:outline-white transition-all"
+          type="text"
+          name="name"
+          placeholder="Sera rellenado automáticamente desde el backend. Puedes sobreescribirlo también."
+        />
+      </div>
+
+      <!-- A que lista de reproduccion sera añadida la cancion -->
+      <div>
+        <label>Lista de reproduccion</label>
+        <select
+          class="block w-[100%] box-border p-2 bg-inherit outline outline-gray-400 outline-none focus:outline-white transition-all"
+          name="playlist"
+        >
+        {playlists.map(playlist => (
+          <option class="bg-[#242424]" value={JSON.stringify(playlist)}>
+            <span>{playlist.name}</span>
+          </option>
+        ))}
+        </select>
+      </div>
+
+      <!-- URL de la cancion -->
       <div>
         <label>URL</label>
         <input
@@ -35,73 +63,79 @@ const artists = await ArtistsAPI.GET.all()
           placeholder="https://www.youtube.com/..."
         />
       </div>
-  
-      <div>
-        <label>Lista de reproduccion</label>
-        <select
-          class="block w-[100%] box-border p-2 bg-inherit outline outline-gray-400 outline-none focus:outline-white transition-all"
-          name="playlist"
-        >
-        {playlists.map(playlist => (
-          <option class="bg-[#242424]" value={JSON.stringify(playlist)}>
-            <img src={playlist.image_url} />
-            <span>{playlist.name}</span>
-          </option>
-        ))}
-        </select>
-      </div>
-      
-      <div>
-        <label>Nombre de la cancion</label>
-        <input
-          class="block w-[100%] box-border p-2 bg-inherit outline outline-gray-400 outline-none focus:outline-white transition-all"
-          type="text"
-          name="name"
-          placeholder="Sera rellenado automáticamente desde el backend. Puedes sobreescribirlo también."
-        />
-      </div>
-  
+
+      <!-- Artista de la cancion -->
       <div>
         <label>Artista</label>
-        <select>
+        <select
+          class="block w-[100%] box-border p-2 bg-inherit outline outline-gray-400 outline-none focus:outline-white transition-all"
+          name="artist"
+        >
           {artists.map(artist => (
             <option value={JSON.stringify(artist)}>{artist.name}</option>
           ))}
         </select>
+      </div>
+
+      <div>
+        <label>Minutos</label>
         <input
           class="block w-[100%] box-border p-2 bg-inherit outline outline-gray-400 outline-none focus:outline-white transition-all"
-          type="text"
-          name="artist"
-          placeholder="Sera rellenado automáticamente desde el backend. Puedes sobreescribirlo también."
+          type="number"
+          name="minutes"
+          required
+        />
+      </div>
+
+      <div>
+        <label>Segundos</label>
+        <input
+          class="block w-[100%] box-border p-2 bg-inherit outline outline-gray-400 outline-none focus:outline-white transition-all"
+          type="number"
+          name="seconds"
+          required
         />
       </div>
     </div>
     
-    <button type="submit" class="block m-auto bg-blue-500 hover:bg-blue-600 active:bg-blue-500 p-3 rounded-md mt-20">Añadir</button>
+    <button type="submit" class="block m-auto bg-blue-500 hover:bg-blue-600 active:bg-blue-500 p-3 rounded-md mt-20">
+      Añadir
+    </button>
   </form>
 </div>
 <script>
+  import { VALID_URL } from "@constants"
   import { isModalOpen } from "@nano/modal"
-	const form = document.querySelector("form")
-	const buttonClose = document.getElementById("close")
 
-  // Regular expression form https://github.com/Raxabi/Downlotube-HTTP/blob/main/client/src/components/UrlForm.tsx#L15C92-L15C92
-  const VALID_URL = new RegExp(/^(https:\/\/(www\.)?)?youtube\.com\/watch\?v=.|youtu\.be\/./)
-  
+	const form = document.querySelector("form")
+	const buttonClose = document.getElementById("close-modal-button")
+
   buttonClose?.addEventListener("click", () => isModalOpen.set(false))
 
   form?.addEventListener("submit", async (e) => {
     e.preventDefault()
     
     const data = new FormData(form)
+
+    const songName = data.get("name")
     const url = data.get("url")
+    const playlist = data.get("playlist")
+    const artist = data.get("artist")
+    const minutes = data.get("minutes")
+    const seconds = data.get("seconds")
 
     if (url && !VALID_URL.test(url.toString())) {
       alert("URL no valida!")
     } else {
-      const req = await fetch("http://localhost:5000/songs/new", {
+      await fetch("http://localhost:5000/songs/new", {
         method: "POST",
-        body: data
+        body: JSON.stringify({
+          name: songName,
+          url: url,
+          duration: (Number(minutes!) * 60) + Number(seconds!),
+          playlist: [playlist],
+          artist: [artist],
+        })
       })
     }
   })
