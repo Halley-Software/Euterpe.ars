@@ -1,4 +1,4 @@
-import { useEffect, createRef, type ChangeEvent, useState } from "react"
+import { useEffect, useState, type ChangeEvent } from "react"
 import { useStore } from "@nanostores/react"
 
 import Slider from "../Slider"
@@ -68,9 +68,10 @@ function Player() {
   useEffect(() => {
     const lastPlaylist = localStorageModel.getLastPlaylist()
     const savedVolume = localStorageModel.getVolume()
+    const resolvedSavedVolume = savedVolume ?? "20"
 
-    setVolume(parseInt(savedVolume ?? "20"))
-    setPreviousVolume(parseInt(savedVolume ?? "20"))
+    setVolume(parseInt(resolvedSavedVolume))
+    setPreviousVolume(parseInt(resolvedSavedVolume))
 
     if (lastPlaylist === null) {
       localStorageModel.setLastPlaylist("1")
@@ -82,9 +83,8 @@ function Player() {
   // Checks every 5 seconds if the saved audio is equal to the new volume
   // if is equal, doesn't anyting, else, saves the new volume into localStorage
   useInterval(() => {
-    if (previousVolume !== volume) {
+    if (previousVolume !== volume)
       localStorageModel.saveVolume(String(volume))
-    }
   }, 5000)
 
   //https://i.kym-cdn.com/entries/icons/facebook/000/037/848/cover2.jpg
@@ -108,7 +108,7 @@ function Player() {
                     <a className="font-bold hover:underline" href={`http://localhost:4321/playlist/${$playlist.id}}`}>{$playlist.name}</a>
                   </span>
                 ) : (
-                  <span className="text-xs">No ha canciones añadidas en {$playlist.name}</span>
+                  <span className="text-xs">No hay canciones añadidas en {$playlist.name}</span>
                 )
               )}
             </div>

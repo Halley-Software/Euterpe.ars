@@ -10,11 +10,11 @@ import { useStore } from "@nanostores/react"
 import { playlist, isPaused, song } from "@nano/player.ts"
 
 // Buttons and other SVG's
-import Loader from "@icons/Loader.tsx"
-import PlayButton from "@icons/PlayButton.tsx"
-import StopButton from "@icons/StopButton.tsx"
-import PreviousButton from "@icons/PreviousButton.tsx"
-import NextButton from "@icons/NextButton.tsx"
+import Loader from "@components/svgs/react/Loader"
+import PlayButton from "@components/svgs/react/PlayButton"
+import StopButton from "@components/svgs/react/StopButton"
+import PreviousButton from "@components/svgs/react/PreviousButton"
+import NextButton from "@components/svgs/react/NextButton"
 
 import Slider from "../Slider"
 import { useInterval } from "@hooks/custom"
@@ -119,7 +119,6 @@ function Controls() {
       song.set(next)
       await next.info.audio.play()
     }
-      
   }
 
   // see PlayerModel.previous
@@ -159,15 +158,11 @@ function Controls() {
           let randomSong = currentPlaylist.songs.getByIdx(Math.floor(Math.random() * playlistLength))
           array.push(currentSong.index)
 
-          if (array.length === playlistLength) {
-            console.log("Se llego al tope")
-            while(array.length > 0) {
+          if (array.length === playlistLength)
+            while(array.length > 0)
               array.pop();
-            }
-          }
 
           while (In(randomSong?.index, array)) {
-            console.log("Buscando otra cancion")
             randomSong = currentPlaylist.songs.getByIdx(Math.floor(Math.random() * playlistLength))
           }
 
