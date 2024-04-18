@@ -1,8 +1,9 @@
 ---
 import { PlayListsAPI } from "@controllers/playlist"
 
-import PlusIcon from "@icons/PlusIcon.astro"
+import PlusIcon from "@components/svgs/astro/PlusIcon.astro"
 import PlaylistAsideCard from "./PlaylistAsideCard"
+import DialogForm from "./DialogForm.astro"
 
 const playlists = await PlayListsAPI.GET.all()
 ---
@@ -27,6 +28,18 @@ const playlists = await PlayListsAPI.GET.all()
       />
     ))}
   </div>
+  <!-- The dialog must persist because the open button will lose the event on every transition -->
+  <dialog open={false} class="p-20 rounded-xl text-white bg-[#242424]" transition:persist>
+    <DialogForm />
+  </dialog>
 </aside>
 <script>
+  import { isModalOpen } from "@nano/modal"
+
+	const buttonOpenDialog = document.getElementById("open-modal-button")
+  const dialog = document.querySelector("dialog")
+
+  buttonOpenDialog?.addEventListener("click", () => isModalOpen.set(!isModalOpen.get()))
+
+  isModalOpen.subscribe(isOpened => isOpened ? dialog?.showModal() : dialog?.close())
 </script>
