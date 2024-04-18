@@ -10,11 +10,11 @@ import { isPaused, playlist, song } from "@nano/player"
 import localStorageModel from "./localstorage.model"
 
 export default {
-  stop: function stop() {
+  stop: async function stop() {
     const actualSong = song.get()
     const isPausedVal = isPaused.get()
     if (actualSong) {
-      isPausedVal ? actualSong.info.audio.pause() : actualSong.info.audio.play()
+      isPausedVal ? actualSong.info.audio.pause() : await actualSong.info.audio.play()
       isPaused.set(!isPausedVal)
     }
   },
@@ -48,8 +48,10 @@ export default {
       return song
     }))
 
-    if (shouldStart)
-      audioedSong[0].audio.play()
+    if (audioedSong.length !== 0) {
+      if (shouldStart)
+        await audioedSong[0].audio.play()
+    }
 
     newPlaylist.songs = new DoubleLinkedList(audioedSong)
 
