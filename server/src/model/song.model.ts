@@ -4,6 +4,8 @@ import { In } from "typeorm"
 import { artistRepo, playlistRepo, songRepo } from "../db/data-sources.js"
 
 import { Song } from "../db/models/song.js"
+import { PostFetchedISong } from "../types/ISong.js"
+import { IArtist } from "#types/artist"
 
 export class SongsController {
   public static GET = class GET {
@@ -47,14 +49,14 @@ export class SongsController {
   }
 
   public static POST = class POST {
-    public static async insert(newSong: ISong) {
+    public static async insert(newSong: PostFetchedISong) {
       const songProto = new Song()
 
       songProto.name = newSong.name
       songProto.url = newSong.url
       songProto.duration = newSong.duration
-      songProto.artist = await artistRepo.findBy({ name: In(newSong.artist.map(artist => artist.name)) })
-      songProto.playlist = await playlistRepo.findBy({ name: newSong.playlist[0].name }) //? FIX: playlist should be passed as an array
+      songProto.artist = await artistRepo.findBy({ name: newSong.artist.name })
+      songProto.playlist = await playlistRepo.findBy({ name: newSong.playlist.name })
 
       return await songRepo.save(songProto)
     }

@@ -10,7 +10,7 @@ export class Song {
     @Column("varchar", { length: 60 })
     name: string
 
-    @Column("varchar", { length: 50, nullable: false })
+    @Column("varchar", { length: 100, nullable: false, unique: true, default: "" })
     url: string
 
     @Column("integer")

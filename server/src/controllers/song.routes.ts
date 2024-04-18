@@ -3,6 +3,9 @@ import { HRouter } from "@laniakeajs/halley.http"
 import { type ResponseStatus } from "#types/response-typings"
 import { SongsController } from "../model/song.model.js"
 import { PlaylistsController } from "../model/playlist.model.js"
+import { IPlaylist } from "#types/playlist"
+import { IArtist } from "#types/artist"
+import { PostFetchedISong } from "../types/ISong.js"
 
 const songRouter = new HRouter("/songs", [])
 
@@ -45,8 +48,22 @@ songRouter.post<["pid"]>("/insert/:pid", (req, res) => {
 songRouter.post("/new", async (req, res) => {
   let response: Partial<ResponseStatus>
 
+  const body: {
+    name: string,
+    url: string,
+    duration: number,
+    playlist: string,
+    artist: string
+  } = JSON.parse(req.body)
+
   try {
-    const song = await SongsController.POST.insert(JSON.parse(req.body))
+    const song = await SongsController.POST.insert({
+      name: body.name,
+      url: body.url,
+      duration: body.duration,
+      playlist: JSON.parse(body.playlist),
+      artist: JSON.parse(body.artist)
+    })
     response = {
       ok: true,
       message: `Nueva cancion ${song.name} guardada con exito`
