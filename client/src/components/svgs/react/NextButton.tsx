@@ -1,4 +1,4 @@
-import "../styles/PlayerControls.css"
+import "@styles/PlayerControls.css"
 
 function NextButton() {
   return (
