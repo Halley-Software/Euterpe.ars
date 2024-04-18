@@ -49,8 +49,10 @@ export default {
     }))
 
     if (audioedSong.length !== 0) {
-      if (shouldStart)
+      if (shouldStart) {
         await audioedSong[0].audio.play()
+        isPaused.set(false)
+      }
     }
 
     newPlaylist.songs = new DoubleLinkedList(audioedSong)
