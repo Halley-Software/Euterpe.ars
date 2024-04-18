@@ -1,2 +1,4 @@
 node_modules/
+DB_CLIENT_MANAGER/
 package-lock.json
+index.ts
