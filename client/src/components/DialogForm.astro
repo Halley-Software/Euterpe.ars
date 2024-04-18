@@ -104,7 +104,7 @@ const artists = await ArtistsAPI.GET.all()
   </form>
 </div>
 <script>
-  import { VALID_URL } from "@constants"
+  import { ADDR, VALID_URL } from "@constants"
   import { isModalOpen } from "@nano/modal"
 
 	const form = document.querySelector("form")
@@ -127,7 +127,7 @@ const artists = await ArtistsAPI.GET.all()
     if (url && !VALID_URL.test(url.toString())) {
       alert("URL no valida!")
     } else {
-      await fetch("http://localhost:5000/songs/new", {
+      await fetch(`http://${ADDR}:5000/songs/new`, {
         method: "POST",
         body: JSON.stringify({
           name: songName,
