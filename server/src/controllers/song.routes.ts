@@ -1,13 +1,10 @@
-import { HRouter } from "@laniakeajs/halley.http"
+import { createRouter } from "@laniakeajs/halley.http"
 
 import { type ResponseStatus } from "#types/response-typings"
 import { SongsController } from "../model/song.model.js"
 import { PlaylistsController } from "../model/playlist.model.js"
-import { IPlaylist } from "#types/playlist"
-import { IArtist } from "#types/artist"
-import { PostFetchedISong } from "../types/ISong.js"
 
-const songRouter = new HRouter("/songs", [])
+const songRouter = createRouter("/songs")
 
 // gets all the songs
 songRouter.get("/", async (_, res) => {

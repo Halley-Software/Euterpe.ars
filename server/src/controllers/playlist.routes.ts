@@ -1,9 +1,9 @@
-import { HRouter } from "@laniakeajs/halley.http"
+import { createRouter } from "@laniakeajs/halley.http"
 
 import { type ResponseStatus } from "#types/response-typings"
 import { PlaylistsController } from "../model/playlist.model.js"
 
-const playlistRouter = new HRouter("/playlists", [])
+const playlistRouter = createRouter("/playlists")
 
 // Gets all the registered playlists
 playlistRouter.get("/", async (_, res) => {
