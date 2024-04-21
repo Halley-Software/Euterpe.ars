@@ -14,14 +14,14 @@
   "author": "Halley Software",
   "license": "ISC",
   "dependencies": {
-    "@laniakeajs/halley.http": "2.0.0-next.19.4",
+    "@laniakeajs/halley.http": "2.0.0",
     "@tinyhttp/cors": "^2.0.0",
-    "mysql2": "^3.9.3",
+    "mysql2": "^3.9.7",
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
-    "@types/node": "^20.12.3",
+    "@types/node": "^20.12.7",
     "nodemon": "^3.1.0",
-    "tsx": "^4.7.1"
+    "tsx": "^4.7.2"
   }
 }
